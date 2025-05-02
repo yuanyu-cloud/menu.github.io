@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生食堂菜單系統</title>
+    <style>
+	
+        body {
+            font-family: 'Noto Sans TC', 'Yu Mincho', 'Hiragino Mincho ProN', serif;
+            margin: 0;
+            padding: 0;
+            background-color: #faf7f2;
+        }
+        header {
+            background-color: #C5172E;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 2em;
+            letter-spacing: 5px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        nav {
+            background-color: #8e2c1c;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        nav a:hover {
+            background-color: #a94438;
+        }
+        section {
+            padding: 30px 20px;
+        }
+        .menu {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #e0d8c3;
+            background-color: #fffdf8;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .menu h2 {
+            text-align: center;
+            color: #8e2c1c;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #e0a0a0;
+            padding-bottom: 10px;
+        }
+        .menu .menu-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .menu .menu-item {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 150px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .menu .menu-item:hover {
+            background-color: #f2f2f2;
+        }
+        .menu .menu-item h3 {
+    font-size: 1.1em; /* 稍微縮小字型大小 */
+    font-weight: normal; /* 設定字體為細體 */
+    color: #8e2c1c;
+}
+
+.menu .menu-item p {
+    font-size: 1em; /* 稍微縮小字型大小 */
+    font-weight: normal; /* 設定字體為細體 */
+    color: #333;
+}
+        .menu .menu-item span {
+            font-size: 1em;
+            color: #999;
+        }
+        .notice {
+            font-size: 1.1em;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+     /* 彈跳視窗樣式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 350px; /* 增大視窗寬度 */
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 加入陰影 */
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #8e2c1c;
+}
+
+.field-group {
+    margin-bottom: 20px; /* 增加欄位之間的間距 */
+    text-align: left;
+}
+
+.field-group label {
+    font-size: 1.1em;
+    color: #333;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.field-group input, .field-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    height: 40px; /* 確保所有輸入框高度一致 */
+}
+
+.field-group input[type="text"], .field-group select {
+    box-sizing: border-box; /* 確保填充不會影響寬度 */
+}
+
+.quantity-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-controls button {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    background-color: #C5172E;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%; /* 讓按鈕變圓形 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quantity-controls input {
+    width: 60px;
+    height: 40px; /* 與按鈕高度一致 */
+    font-size: 18px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+
+.modal-content button {
+    width: 100%;
+    padding: 12px;
+    background-color: #C5172E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.modal-content button:hover {
+    background-color: #a94438;
+}
+
+
+       .quantity-controls button {
+    width: 40px; /* 增大按鈕的寬度 */
+    height: 40px; /* 增大按鈕的高度 */
+    font-size: 24px; /* 放大字型大小 */
+    background-color: #C5172E;
+    color: white;
+    border: none;
+    cursor: pointer;
+	border-radius: 50%; /* 讓按鈕變圓形 */
+   display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.quantity-controls input {
+    width: 60px;
+    height: 40px; /* 與按鈕高度一致 */
+    font-size: 18px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+.view-cart {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%; /* 增加寬度至95% */
+    max-width: 600px; /* 最大寬度設為600px */
+    padding: 16px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff4e6;
+    background: linear-gradient(145deg, #8e2c1c, #6f2115);
+    border: 2px solid #6f2115;
+    box-shadow: 0 4px 10px rgba(110, 40, 20, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.view-cart:hover {
+    background: linear-gradient(145deg, #a0301d, #7b2415);
+    box-shadow: 0 6px 15px rgba(80, 30, 20, 0.4);
+    transform: translateX(-50%) scale(1.03);
+}
+
+
+
+
+
+/* 購物車內容顯示視窗 */
+.cart-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);  /* 增強遮罩效果 */
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease; /* 加入淡入效果 */
+}
+
+.cart-modal-content {
+    background-color: white;
+    padding: 25px; /* 更大的內邊距 */
+    border-radius: 15px;  /* 改為圓角 */
+    width: 380px; /* 調整寬度 */
+    text-align: left;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  /* 更深的陰影 */
+    max-height: 80vh;  /* 限制最大高度，避免過長 */
+    overflow-y: auto;  /* 滾動條 */
+}
+
+.cart-modal-content h2 {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #8e2c1c;
+    text-align: center;  /* 標題居中 */
+}
+
+.cart-modal-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cart-modal-content ul li {
+    margin-bottom: 15px;  /* 調整項目間距 */
+}
+
+.cart-modal-content ul li .item-line {
+    border-bottom: 1px solid #8e2c1c;  /* 橫線 */
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.cart-modal-content ul li button {
+    margin: 0 5px;  /* 讓按鈕之間有間距 */
+}
+
+.cart-modal-content button {
+    width: 100%;
+    padding: 12px;
+    background-color: #C5172E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px; /* 增加按鈕上邊距 */
+    font-size: 1.2em;  /* 增加字體大小 */
+}
+
+.cart-modal-content button:hover {
+    background-color: #a94438;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  /* 增加陰影效果 */
+}
+
+//繼續點餐按鈕
+.cart-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    display: block;
+    margin: 10px auto 0 auto; /* 上10px，自動置中 */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.continue-button {
+    background-color: #4CAF50; /* 綠色 */
+}
+
+.complete-button {
+    background-color: #d9534f; /* 紅色 */
+    margin-top: 10px;
+}
+
+//檢視購物車按鈕樣式
+
+#viewCartBtn {
+  display: flex;
+  justify-content: space-between;  /* 左右對齊 */
+  align-items: center;
+  width: 100%;  /* 讓按鈕佔滿父元素 */
+  padding: 8px 16px;
+  font-size: 16px;
+}
+
+.cart-info {
+  font-weight: bold;
+  margin: 70px;
+}
+
+.cart-text {
+  margin: 70px;
+}
+//適用於不同裝置
+/* 預設樣式：適用於桌面版 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px; /* 桌面最大寬度 */
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 手機版樣式：螢幕寬度小於 768px 時使用 */
+@media only screen and (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .header {
+        font-size: 24px;  /* 標題字型大小減小 */
+    }
+
+    .product-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .product-item {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* 平板樣式：螢幕寬度介於 768px 和 1024px 之間 */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        padding: 15px;
+    }
+
+    .product-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .product-item {
+        width: 48%;  /* 每行顯示兩個商品 */
+        margin-bottom: 20px;
+    }
+}
+
+/* 桌面版樣式 */
+@media only screen and (min-width: 1024px) {
+    .container {
+        padding: 30px;
+    }
+
+    .product-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .product-item {
+        width: 30%;  /* 每行顯示三個商品 */
+        margin-bottom: 20px;
+    }
+}
+
+/* 讓圖片在任何螢幕大小下自適應 */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 可以在需要的地方加上更多樣式 */
+
+    </style>
+	
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>您的網站</title>
+    <!-- 這裡可以加入其他資源，如 CSS 和 JS 檔案 -->
+
+</head>
+<body>
+    <header>
+        學生食堂
+    </header>
+    <nav>
+        <a href="#donburi">丼飯</a>
+        <a href="#curry">咖哩</a>
+        <a href="#combo">套餐</a>
+		<a href="#single">單點</a>
+
+    </nav>
+
+    <section id="donburi">
+        <div class="menu">
+            <h2>丼飯</h2>
+            <div class="menu-items">
+                <div class="menu-item" onclick="showModal('豬排丼飯')">
+                    <h3>豬排丼飯</h3>
+                    <p>90元</p>
+                </div>
+                <div class="menu-item" onclick="showModal('牛肉丼飯')">
+                    <h3>牛肉丼飯</h3>
+                    <p>90元</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="curry">
+        <div class="menu">
+            <h2>咖哩</h2>
+            <div class="menu-items">
+                <div class="menu-item" onclick="showModal('咖哩豬排')">
+                    <h3>咖哩豬排</h3>
+                    <p>110元</p>
+                </div>
+                <div class="menu-item" onclick="showModal('咖哩牛肉')">
+                    <h3>咖哩牛肉</h3>
+                    <p>110元</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  <section id="combo">
+    <div class="menu">
+        <h2>套餐</h2>
+        <div class="menu-items">
+            <div class="menu-item" onclick="showModal('蒜泥白肉', 120, 70)">
+                <h3>蒜泥白肉</h3>
+                <p>套餐: 120元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('椒鹽豬排', 120, 70)">
+                <h3>椒鹽豬排</h3>
+                <p>套餐: 120元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('日式黃金豬排', 120, 70)">
+                <h3>日式黃金豬排</h3>
+                <p>套餐: 120元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('日式咖哩可樂餅', 120, 70)">
+                <h3>日式咖哩可樂餅</h3>
+                <p>套餐: 120元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('日式雙拼可樂餅', 120, 70)">
+                <h3>日式雙拼可樂餅</h3>
+                <p>套餐: 120元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('香酥雞腿', 130, 90)">
+                <h3>香酥雞腿</h3>
+                <p>套餐: 130元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('檸檬雞腿', 130, 90)">
+                <h3>檸檬雞腿</h3>
+                <p>套餐: 130元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('宮保雞丁', 130, 90)">
+                <h3>宮保雞丁</h3>
+                <p>套餐: 130元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('蔥爆肉絲', 130, 90)">
+                <h3>蔥爆肉絲</h3>
+                <p>套餐: 130元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('京醬肉絲', 130, 90)">
+                <h3>京醬肉絲</h3>
+                <p>套餐: 130元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('黑胡椒肉絲', 130, 90)">
+                <h3>黑胡椒肉絲</h3>
+                <p>套餐: 130元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('糖醋里肌', 130, 90)">
+                <h3>糖醋里肌</h3>
+                <p>套餐: 130元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('泰式魚排', 140, 90)">
+                <h3>泰式魚排</h3>
+                <p>套餐: 140元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('橙汁排骨', 150, 100)">
+                <h3>橙汁排骨</h3>
+                <p>套餐: 150元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('京都排骨', 150, 100)">
+                <h3>京都排骨</h3>
+                <p>套餐: 150元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('糖醋排骨', 150, 100)">
+                <h3>糖醋排骨</h3>
+                <p>套餐: 150元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('蔥爆牛肉', 150, 100)">
+                <h3>蔥爆牛肉</h3>
+                <p>套餐: 150元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('宮保牛肉', 150, 100)">
+                <h3>宮保牛肉</h3>
+                <p>套餐: 150元</p>
+            </div>
+        </div>
+    </div>
+
+    <section id="single">
+    <div class="menu">
+        <h2>單點</h2>
+        <div class="menu-items">
+            <div class="menu-item" onclick="showModal('白飯', 10, 10)">
+                <h3>白飯 </h3>
+                <p>單點: 10元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('蒜泥白肉(單)', 70, 70)">
+                <h3>蒜泥白肉 (單)</h3>
+                <p>單點: 70元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('椒鹽豬排(單)', 70, 70)">
+                <h3>椒鹽豬排 (單)</h3>
+                <p>單點: 70元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('日式黃金豬排(單)', 70, 70)">
+                <h3>日式黃金豬排 (單)</h3>
+                <p>單點: 70元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('日式咖哩可樂餅(單)', 70, 70)">
+                <h3>日式咖哩可樂餅 (單)</h3>
+                <p>單點: 70元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('日式雙拼可樂餅(單)', 70, 70)">
+                <h3>日式雙拼可樂餅 (單)</h3>
+                <p>單點: 70元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('香酥雞腿(單)', 90, 90)">
+                <h3>香酥雞腿 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('檸檬雞腿(單)', 90, 90)">
+                <h3>檸檬雞腿 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('宮保雞丁(單)', 90, 90)">
+                <h3>宮保雞丁 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('蔥爆肉絲(單)', 90, 90)">
+                <h3>蔥爆肉絲 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('京醬肉絲(單)', 90, 90)">
+                <h3>京醬肉絲 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('黑胡椒肉絲(單)', 90, 90)">
+                <h3>黑胡椒肉絲 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('糖醋里肌(單)', 90, 90)">
+                <h3>糖醋里肌 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('泰式魚排(單)', 90, 90)">
+                <h3>泰式魚排 (單)</h3>
+                <p>單點: 90元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('橙汁排骨(單)', 100, 100)">
+                <h3>橙汁排骨 (單)</h3>
+                <p>單點: 100元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('京都排骨(單)', 100, 100)">
+                <h3>京都排骨 (單)</h3>
+                <p>單點: 100元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('糖醋排骨(單)', 100, 100)">
+                <h3>糖醋排骨 (單)</h3>
+                <p>單點: 100元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('蔥爆牛肉(單)', 100, 100)">
+                <h3>蔥爆牛肉 (單)</h3>
+                <p>單點: 100元</p>
+            </div>
+            <div class="menu-item" onclick="showModal('宮保牛肉(單)', 100, 100)">
+                <h3>宮保牛肉 (單)</h3>
+                <p>單點: 100元</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- 彈跳視窗 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2 id="productName">餐點名稱</h2>
+            <div class="field-group">
+                <label for="addRice">是否加飯：</label>
+                <select id="addRice">
+                    <option value="否">否</option>
+                    <option value="是">是</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label for="note">備註：</label>
+                <input type="text" id="note" placeholder="請輸入備註">
+            </div>
+            <div class="field-group">
+                <label for="quantity">數量：</label>
+                <div class="quantity-controls">
+                    <button onclick="changeQuantity(-1)">-</button>
+                    <input type="number" id="quantity" value="1" min="1" max="10">
+                    <button onclick="changeQuantity(1)">+</button>
+                </div>
+            </div>
+            <button onclick="addToCart()">加入購物車</button>
+            <button onclick="closeModal()">關閉</button>
+        </div>
+    </div>
+
+
+    <script>
+       function showModal(productName) {
+    document.getElementById('productName').textContent = productName;
+    document.getElementById('quantity').value = 1;
+    document.getElementById('note').value = '';
+    document.getElementById('note').placeholder = '備註';
+    document.getElementById('addRice').value = '否';
+    document.getElementById('myModal').style.display = "flex";
+}
+
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = "none";
+        }
+
+        function changeQuantity(amount) {
+            let quantityInput = document.getElementById('quantity');
+            let currentQuantity = parseInt(quantityInput.value);
+            let newQuantity = currentQuantity + amount;
+            if (newQuantity < 1) newQuantity = 1;
+            if (newQuantity > 10) newQuantity = 10;
+            quantityInput.value = newQuantity;
+        }
+
+        function addToCart() {
+            const productName = document.getElementById('productName').textContent;
+            const quantity = document.getElementById('quantity').value;
+            const addRice = document.getElementById('addRice').value;
+            const note = document.getElementById('note').value;
+            alert(`${productName} x ${quantity} 已加入購物車\n加飯: ${addRice}\n備註: ${note}`);
+            closeModal();
+        }
+    </script>
+
+ <button id="viewCartBtn" class="view-cart">
+  <span id="cart-count" class="cart-info">(2)</span>  <!-- 顯示總數量 -->
+  <span class="cart-text">檢視購物車</span>
+  <span id="cart-total-price" class="cart-info">$120</span>  <!-- 顯示總價 -->
+</button>
+
+
+
+
+    <!-- 購物車內容視窗 -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-modal-content">
+            <h2>購物車內容</h2>
+            <ul id="cartList"></ul>
+			 <button class="cart-button continue-button" onclick="closeCart()">繼續點餐</button>
+           <button onclick="completeOrder()">完成點餐</button>
+
+        </div>
+    </div>
+
+    <!-- 彈跳視窗 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2 id="productName">餐點名稱</h2>
+            <div class="field-group">
+                <label for="addRice">是否加飯：</label>
+                <select id="addRice">
+                    <option value="否">否</option>
+                    <option value="是">是</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label for="note">備註：</label>
+                <input type="text" id="note" placeholder="請輸入備註">
+            </div>
+            <div class="field-group">
+                <label for="quantity">數量：</label>
+                <div class="quantity-controls">
+                    <button onclick="changeQuantity(-1)">-</button>
+                    <input type="number" id="quantity" value="1" min="1" max="10">
+                    <button onclick="changeQuantity(1)">+</button>
+                </div>
+            </div>
+            <button onclick="addToCart()">加入購物車</button>
+            <button onclick="closeModal()">關閉</button>
+        </div>
+    </div>
+
+    <script>
+	
+	let cart = []; // 初始化購物車
+
+        const productPrices = {
+    "白飯": 10,    //單點價格
+    "蒜泥白肉(單)": 70,
+    "椒鹽豬排(單)": 70,
+    "日式黃金豬排(單)": 70,
+    "日式咖哩可樂餅(單)": 70,
+    "日式雙拼可樂餅(單)": 70,
+    "香酥雞腿(單)": 90,
+    "檸檬雞腿(單)": 90,
+    "宮保雞丁(單)": 90,
+    "蔥爆肉絲(單)": 90,
+    "京醬肉絲(單)": 90,
+    "黑胡椒肉絲(單)": 90,
+    "糖醋里肌(單)": 90,
+    "泰式魚排(單)": 90,
+    "橙汁排骨(單)": 100,
+    "京都排骨(單)": 100,
+    "糖醋排骨(單)": 100,
+    "蔥爆牛肉(單)": 100,
+    "宮保牛肉(單)": 100,
+    "豬排丼飯": 90, //丼飯價格
+    "牛肉丼飯": 90,
+    "咖哩豬排": 110,//咖哩價格
+    "咖哩牛肉": 110,
+    "蒜泥白肉": 120,  // 套餐價格
+    "椒鹽豬排": 120, 
+    "日式黃金豬排": 120,  
+    "日式咖哩可樂餅": 120,  
+    "日式雙拼可樂餅": 120,  
+    "香酥雞腿": 130,  
+    "檸檬雞腿": 130,  
+    "宮保雞丁": 130, 
+    "蔥爆肉絲": 130,  
+    "京醬肉絲": 130,  
+    "黑胡椒肉絲": 130, 
+    "糖醋里肌": 130,  
+    "泰式魚排": 140, 
+    "橙汁排骨": 150,  
+    "京都排骨": 150,  
+    "糖醋排骨": 150,  
+    "蔥爆牛肉": 150,  
+    "宮保牛肉": 150,  
+};
+
+function viewCart() {
+    const cartList = document.getElementById('cartList');
+    cartList.innerHTML = ''; // 清空現有的項目
+    let totalPrice = 0; // 用來儲存總價格
+    let totalQuantity = 0; // 用來儲存總數量
+
+    cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.flexDirection = 'column';
+        li.style.marginBottom = '20px';
+
+        // 根據商品名稱取得價格
+        const productPrice = productPrices[item.productName];
+        const totalItemPrice = productPrice * item.quantity;  // 計算每個商品的總價
+
+        // 計算總數量
+        totalQuantity += item.quantity;
+
+        // 顯示產品名稱、數量、單價和小計
+        const productInfo = document.createElement('div');
+        productInfo.style.display = 'flex';
+        productInfo.style.justifyContent = 'space-between';
+        productInfo.innerHTML = `
+            <span>${item.productName} x ${item.quantity}</span>
+            <span>單價: ${productPrice}元　小計: ${totalItemPrice}元</span>
+        `;
+        
+        // 創建加飯和備註顯示
+        const additionalInfo = document.createElement('div');
+        additionalInfo.style.display = 'flex';
+        additionalInfo.style.justifyContent = 'space-between';
+        additionalInfo.style.alignItems = 'center';
+        additionalInfo.innerHTML = `加飯: ${item.addRice} - 備註: ${item.note}`;
+        
+        // 創建數量控制按鈕區域，將其放在右側
+        const quantityControls = document.createElement('div');
+        quantityControls.style.display = 'flex';
+        quantityControls.style.justifyContent = 'flex-end'; // 確保按鈕顯示在右邊
+        quantityControls.style.alignItems = 'center'; // 使按鈕和文字垂直對齊
+
+        // 減少數量按鈕
+        const minusButton = document.createElement('button');
+        minusButton.textContent = '-';
+        minusButton.onclick = () => changeCartItemQuantity(index, -1);
+        minusButton.style.marginLeft = '10px';  // 設置按鈕之間的間距
+        minusButton.style.fontSize = '16px';  // 小一點的字型
+        minusButton.style.width = '30px'; // 按鈕寬度
+        minusButton.style.height = '30px'; // 按鈕高度
+        quantityControls.appendChild(minusButton);
+
+        // 增加數量按鈕
+        const plusButton = document.createElement('button');
+        plusButton.textContent = '+';
+        plusButton.onclick = () => changeCartItemQuantity(index, 1);
+        plusButton.style.fontSize = '16px';  // 小一點的字型
+        plusButton.style.width = '30px'; // 按鈕寬度
+        plusButton.style.height = '30px'; // 按鈕高度
+        quantityControls.appendChild(plusButton);
+
+        // 把加飯和備註區域加到 li 元素中
+        li.appendChild(productInfo);
+        li.appendChild(additionalInfo);
+        // 把數量控制區域加到 li 元素中
+        li.appendChild(quantityControls);
+
+        // 添加橫線
+        const line = document.createElement('div');
+        line.style.borderBottom = '1px solid #8e2c1c';  // 橫線的顏色和厚度
+        line.style.marginTop = '10px';  // 橫線上方間距
+        line.style.marginBottom = '10px';  // 橫線下方間距
+        li.appendChild(line);
+
+        // 把新增的 li 加到 cartList 中
+        cartList.appendChild(li);
+
+        // 累加總價
+        totalPrice += totalItemPrice;
+    });
+
+    // 顯示總數量和總價
+    const totalInfoElement = document.createElement('div');
+    totalInfoElement.style.textAlign = 'right';  // 右對齊
+    totalInfoElement.style.fontWeight = 'bold';
+    totalInfoElement.innerHTML = `總數量: ${totalQuantity}　總價: ${totalPrice}元`;  // 顯示總數量和總價
+    cartList.appendChild(totalInfoElement);
+
+    // 顯示購物車視窗
+    document.getElementById('cartModal').style.display = "flex";
+}
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = "none";
+        }
+
+        function completeOrder() {
+            alert("您的訂單已完成！");
+            cart = [];
+            updateCartButton();
+            closeCart();
+        }
+
+        // 點擊檢視購物車按鈕
+        document.getElementById('viewCartBtn').onclick = viewCart;
+		
+// 更改商品數量
+function changeCartItemQuantity(index, change) {
+    // 獲取對應的商品
+    const item = cart[index];
+
+    // 修改數量
+    item.quantity += change;
+
+    // 如果數量變為 0 或以下，則從購物車中刪除該商品
+    if (item.quantity <= 0) {
+        cart.splice(index, 1);  // 刪除該商品
+    }
+
+    // 更新購物車顯示
+    viewCart();
+}
+
+function updateCartButton() {
+    const cartBtn = document.getElementById('viewCartBtn');
+    const countSpan = document.getElementById('cart-count');
+    const priceSpan = document.getElementById('cart-total-price');
+
+    if (cart.length > 0) {
+        cartBtn.style.display = "block";
+
+        // 計算總數量與總價
+        let totalQuantity = 0;
+        let totalPrice = 0;
+
+        cart.forEach(item => {
+            totalQuantity += item.quantity;
+            const productPrice = productPrices[item.productName];
+            totalPrice += productPrice * item.quantity;
+        });
+
+        countSpan.textContent = `(${totalQuantity})`;
+        priceSpan.textContent = `$${totalPrice}`;
+
+    } else {
+        cartBtn.style.display = "none";
+        countSpan.textContent = `(0)`;
+        priceSpan.textContent = `$0`;
+    }
+}
+
+
+function addToCart() {
+    const productName = document.getElementById("productName").textContent;
+    const addRice = document.getElementById("addRice").value;
+    const note = document.getElementById("note").value;
+    const quantity = parseInt(document.getElementById("quantity").value);
+
+    // 找出是否已經有一樣的商品（同樣名稱、加飯、備註）
+    const existingItem = cart.find(item => 
+        item.productName === productName && 
+        item.addRice === addRice &&
+        item.note === note
+    );
+
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cart.push({
+            productName,
+            addRice,
+            note,
+            quantity
+        });
+    }
+
+    updateCartButton();  // 顯示或隱藏「檢視購物車」按鈕
+    closeModal();        // 關閉 modal 視窗
+}
+
+
+function completeOrder() {
+    let orderSummary = cart.map(item => {
+        const productPrice = productPrices[item.productName];
+        const totalItemPrice = productPrice * item.quantity;  // 計算每個商品的總價
+
+        // 創建每個欄位的結構
+        const productName = item.productName.padEnd(25, ' '); // 商品名稱固定25個字
+        const quantity = item.quantity.toString().padStart(3, ' '); // 數量對齊
+        const addRice = item.addRice.padEnd(4, ' '); // 加飯對齊
+        const note = item.note.padEnd(6, ' '); // 備註對齊
+        const itemPrice = totalItemPrice.toString().padStart(6, ' '); // 小計對齊
+
+        // 返回每個商品的排版，使用空格來對齊
+        return `${productName} x${quantity}   加飯: ${addRice} 備註: ${note} 小計: ${itemPrice} 元`;
+    }).join('\n');
+
+    // 計算總金額
+    let totalAmount = cart.reduce((total, item) => {
+        const productPrice = productPrices[item.productName];
+        return total + (productPrice * item.quantity);
+    }, 0);
+
+    // 組合訂單詳情字串，避免縮排空格影響 alert 顯示
+    const orderDetails = 
+`訂單明細：
+${'-'.repeat(55)}
+${orderSummary}
+${'-'.repeat(55)}
+訂單總額：${totalAmount.toString().padStart(6)} 元`;
+
+    // 使用 alert 顯示訂單詳情
+    alert(`您的訂單已完成！\n\n${orderDetails}`);
+
+    // 清空購物車
+    cart = [];
+    updateCartButton();
+    closeCart();
+}
+
+
+    </script>
+	
+	
+
+</body>
+</html>
